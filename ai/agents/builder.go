@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	repoc "github.com/yourorg/ai-agents-sdk/ai/context"
-	"github.com/yourorg/ai-agents-sdk/ai/llm"
+	repoc "github.com/buiviethoang/ai-agents-sdk/ai/context"
+	"github.com/buiviethoang/ai-agents-sdk/ai/llm"
 )
 
 const builderPrompt = `You are a senior Go engineer.

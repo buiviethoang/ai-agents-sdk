@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yourorg/ai-agents-sdk/sdk"
+	"github.com/buiviethoang/ai-agents-sdk/sdk"
 )
 
 func main() {

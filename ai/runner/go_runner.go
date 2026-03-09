@@ -7,9 +7,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	repoc "github.com/yourorg/ai-agents-sdk/ai/context"
-	"github.com/yourorg/ai-agents-sdk/ai/agents"
-	"github.com/yourorg/ai-agents-sdk/ai/llm"
+	repoc "github.com/buiviethoang/ai-agents-sdk/ai/context"
+	"github.com/buiviethoang/ai-agents-sdk/ai/agents"
+	"github.com/buiviethoang/ai-agents-sdk/ai/llm"
 )
 
 const maxIterations = 2

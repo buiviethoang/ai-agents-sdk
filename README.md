@@ -5,7 +5,7 @@ Go SDK and CLI for an AI agent workflow: Builder writes Go code, Reviewer valida
 ## Install
 
 ```bash
-go get github.com/yourorg/ai-agents-sdk
+go get github.com/buiviethoang/ai-agents-sdk
 ```
 
 ## Library Usage
@@ -13,7 +13,7 @@ go get github.com/yourorg/ai-agents-sdk
 ```go
 import (
     "context"
-    "github.com/yourorg/ai-agents-sdk/sdk"
+    "github.com/buiviethoang/ai-agents-sdk/sdk"
 )
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 ## CLI Usage
 
 ```bash
-go install github.com/yourorg/ai-agents-sdk/cmd/ai-engineer@latest
+go install github.com/buiviethoang/ai-agents-sdk/cmd/ai-engineer@latest
 export ANTHROPIC_API_KEY=your-key
 ai-engineer run "Add Redis cache to user profile API"
 ```

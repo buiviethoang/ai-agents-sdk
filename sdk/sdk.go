@@ -3,8 +3,8 @@ package sdk
 import (
 	"context"
 
-	"github.com/yourorg/ai-agents-sdk/ai/llm"
-	"github.com/yourorg/ai-agents-sdk/ai/runner"
+	"github.com/buiviethoang/ai-agents-sdk/ai/llm"
+	"github.com/buiviethoang/ai-agents-sdk/ai/runner"
 )
 
 // Config configures an AI agent run.

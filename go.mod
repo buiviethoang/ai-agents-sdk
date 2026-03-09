@@ -1,4 +1,4 @@
-module github.com/yourorg/ai-agents-sdk
+module github.com/buiviethoang/ai-agents-sdk
 
 go 1.23.0
 

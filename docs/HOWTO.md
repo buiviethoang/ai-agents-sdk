@@ -17,14 +17,14 @@ AI agents write Go code and review it for you. You describe a task; they build, 
 ### 2.1 Install CLI
 
 ```bash
-go install github.com/yourorg/ai-agents-sdk/cmd/ai-engineer@latest
+go install github.com/buiviethoang/ai-agents-sdk/cmd/ai-engineer@latest
 ```
 
 ### 2.2 Add SDK as dependency (optional, for Go tooling)
 
 ```bash
 cd /path/to/notification-service
-go get github.com/yourorg/ai-agents-sdk
+go get github.com/buiviethoang/ai-agents-sdk
 ```
 
 ### 2.3 Create `ARCHITECTURE.md` in project root
@@ -161,7 +161,7 @@ ai-engineer "Your task here"
 ```go
 import (
     "context"
-    "github.com/yourorg/ai-agents-sdk/sdk"
+    "github.com/buiviethoang/ai-agents-sdk/sdk"
 )
 
 result, err := sdk.Run(context.Background(), "Add Redis cache", sdk.Config{
