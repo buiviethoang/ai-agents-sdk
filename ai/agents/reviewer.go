@@ -7,29 +7,26 @@ import (
 	"github.com/buiviethoang/ai-agents-sdk/ai/llm"
 )
 
-const reviewerPrompt = `You are a strict Go reviewer.
+const reviewerSystemPrompt = `You are a strict Go reviewer.
 
-Review the code and tests.
-
-Check for:
+Checklist:
 - logical bugs
 - race conditions
 - missing edge cases
 - incomplete tests
 
-If problems exist:
-Explain clearly and propose fixes.
+If problems: explain clearly and propose fixes.
+If good: return APPROVED.
+If unsure: prefer REQUEST_CHANGES.
 
-If good:
-Return APPROVED.
-
-Respond with exactly APPROVED or REQUEST_CHANGES at the start of your response, followed by optional feedback.`
+First line must be: VERDICT: APPROVED or VERDICT: REQUEST_CHANGES
+Then list each finding (or "None"), then your verdict.`
 
 const Approved = "APPROVED"
 const RequestChanges = "REQUEST_CHANGES"
 
 type ReviewResult struct {
-	Status  string
+	Status   string
 	Feedback string
 }
 
@@ -50,9 +47,9 @@ func (r *Reviewer) Review(ctx context.Context, files map[string]string) (ReviewR
 		sb.WriteString(content)
 		sb.WriteString("\n")
 	}
-	prompt := reviewerPrompt + "\n\nCode to review:\n" + sb.String()
+	user := "Code to review:\n" + sb.String()
 
-	resp, err := r.llm.Send(ctx, "", prompt)
+	resp, err := r.llm.Send(ctx, reviewerSystemPrompt, user)
 	if err != nil {
 		return ReviewResult{}, err
 	}
@@ -61,14 +58,17 @@ func (r *Reviewer) Review(ctx context.Context, files map[string]string) (ReviewR
 
 func parseReviewResponse(resp string) ReviewResult {
 	upper := strings.ToUpper(strings.TrimSpace(resp))
+	if strings.Contains(upper, "VERDICT: APPROVED") {
+		return ReviewResult{Status: Approved}
+	}
+	if strings.Contains(upper, "VERDICT: REQUEST_CHANGES") {
+		return ReviewResult{Status: RequestChanges, Feedback: resp}
+	}
 	if strings.Contains(upper[:min(50, len(upper))], Approved) {
 		return ReviewResult{Status: Approved}
 	}
 	if strings.Contains(upper[:min(100, len(upper))], RequestChanges) {
 		return ReviewResult{Status: RequestChanges, Feedback: resp}
-	}
-	if strings.HasPrefix(upper, Approved) {
-		return ReviewResult{Status: Approved}
 	}
 	return ReviewResult{Status: RequestChanges, Feedback: resp}
 }

@@ -27,6 +27,9 @@ go.work.sum
 # env file
 .env
 
+# AI agents cache
+.ai-agents-cache
+
 # Editor/IDE
 # .idea/
 # .vscode/

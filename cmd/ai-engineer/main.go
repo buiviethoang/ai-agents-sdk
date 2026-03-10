@@ -14,6 +14,7 @@ func main() {
 	dryRun := flag.Bool("dry-run", false, "skip writing files and validation")
 	maxFiles := flag.Int("max-files", 15, "max files to include in context")
 	maxTokens := flag.Int64("max-tokens", 4096, "max output tokens")
+	model := flag.String("model", "sonnet", "sonnet or haiku")
 	flag.Parse()
 
 	args := flag.Args()
@@ -33,6 +34,7 @@ func main() {
 		DryRun:    *dryRun,
 		MaxFiles:  *maxFiles,
 		MaxTokens: *maxTokens,
+		Model:     *model,
 	}
 	result, err := sdk.Run(ctx, feature, cfg)
 	if err != nil {

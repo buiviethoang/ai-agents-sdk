@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/buiviethoang/ai-agents-sdk/ai/cache"
 )
 
 type FileContent struct {
@@ -15,25 +17,29 @@ type FileContent struct {
 
 type RepoContext struct {
 	Architecture string
-	Files       []FileContent
+	Files        []FileContent
 }
 
+const defaultMaxCharsPerFile = 8000
+
 type Extractor struct {
-	MaxFiles int
+	MaxFiles        int
+	MaxCharsPerFile int
+	CacheDir        string
 }
 
 func NewExtractor(maxFiles int) *Extractor {
 	if maxFiles <= 0 {
 		maxFiles = 15
 	}
-	return &Extractor{MaxFiles: maxFiles}
+	return &Extractor{MaxFiles: maxFiles, MaxCharsPerFile: defaultMaxCharsPerFile}
 }
 
 func (e *Extractor) Extract(ctx stdctx.Context, rootDir, feature string) (*RepoContext, error) {
 	arch, _ := os.ReadFile(filepath.Join(rootDir, "ARCHITECTURE.md"))
 	rc := &RepoContext{
 		Architecture: string(arch),
-		Files:       e.findRelevantFiles(ctx, rootDir, feature),
+		Files:        e.findRelevantFiles(ctx, rootDir, feature),
 	}
 	return rc, nil
 }
@@ -47,6 +53,7 @@ type scoredFile struct {
 func (e *Extractor) findRelevantFiles(ctx stdctx.Context, rootDir, feature string) []FileContent {
 	keywords := extractKeywords(feature)
 	var candidates []scoredFile
+	idx := cache.New(e.CacheDir)
 
 	_ = filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -67,12 +74,32 @@ func (e *Extractor) findRelevantFiles(ctx stdctx.Context, rootDir, feature strin
 			return nil
 		}
 		rel, _ := filepath.Rel(rootDir, path)
-		content, err := os.ReadFile(path)
-		if err != nil {
-			return nil
+		mtime := info.ModTime().Unix()
+		var content string
+		if e.CacheDir != "" {
+			if c, ok := idx.Get(rel, mtime); ok {
+				content = c
+			}
 		}
-		score := matchScore(string(content), rel, keywords)
-		candidates = append(candidates, scoredFile{path: rel, content: string(content), score: score})
+		if content == "" {
+			b, err := os.ReadFile(path)
+			if err != nil {
+				return nil
+			}
+			content = string(b)
+			if e.CacheDir != "" {
+				_ = idx.Put(rel, mtime, content)
+			}
+		}
+		maxChars := e.MaxCharsPerFile
+		if maxChars <= 0 {
+			maxChars = defaultMaxCharsPerFile
+		}
+		if len(content) > maxChars {
+			content = content[:maxChars] + "\n// ... truncated"
+		}
+		score := matchScore(content, rel, keywords)
+		candidates = append(candidates, scoredFile{path: rel, content: content, score: score})
 		return nil
 	})
 

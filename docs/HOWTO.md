@@ -17,7 +17,11 @@ AI agents write Go code and review it for you. You describe a task; they build, 
 ### 2.1 Install CLI
 
 ```bash
-go install github.com/buiviethoang/ai-agents-sdk/cmd/ai-engineer@latest
+# Option A: helper script
+bash scripts/helper.sh install
+
+# Option B: direct (use main to avoid proxy cache)
+GOPROXY=direct go install github.com/buiviethoang/ai-agents-sdk/cmd/ai-engineer@main
 ```
 
 ### 2.2 Add SDK as dependency (optional, for Go tooling)
@@ -123,14 +127,20 @@ ai-engineer "Fix race condition in cache update"
 | `--dry-run` | false | Don't write files or run validation |
 | `--max-files` | 15 | Max files sent to AI (token control) |
 | `--max-tokens` | 4096 | Max output tokens |
+| `--model` | sonnet | `sonnet` or `haiku` (haiku = lower cost) |
 
 ```bash
 # Preview without changing files
 ai-engineer --dry-run "Add Redis cache for templates"
 
+# Lower cost with Haiku
+ai-engineer --model=haiku "Add unit tests"
+
 # More context for large changes
 ai-engineer --max-files=20 "Refactor notification pipeline"
 ```
+
+File index cache: `.ai-agents-cache/` is created in your project to avoid re-reading unchanged files on subsequent runs.
 
 ---
 
@@ -142,7 +152,7 @@ ai-engineer --max-files=20 "Refactor notification pipeline"
 4. **Debate** – Up to 2 iterations if changes are requested.
 5. **Validate** – `go fmt`, `go vet`, `golangci-lint`, `go test`, `go test -cover`.
 
-If validation fails, no files are kept; you see the error.
+If validation fails, you see the error. See [docs/VALIDATE.md](VALIDATE.md) for the exact flow.
 
 ---
 

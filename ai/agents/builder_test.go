@@ -6,9 +6,9 @@ import (
 
 func TestParseFileBlocks(t *testing.T) {
 	tests := []struct {
-		name   string
-		resp   string
-		want   map[string]string
+		name string
+		resp string
+		want map[string]string
 	}{
 		{
 			name: "single block",
@@ -19,6 +19,11 @@ func TestParseFileBlocks(t *testing.T) {
 			name: "multiple blocks",
 			resp: "path: a.go\n```\ncontent a\n```\npath: b.go\n```go\ncontent b\n```",
 			want: map[string]string{"a.go": "content a", "b.go": "content b"},
+		},
+		{
+			name: "file format",
+			resp: "<<FILE pkg/foo.go>>\npackage pkg\n<<END>>",
+			want: map[string]string{"pkg/foo.go": "package pkg"},
 		},
 		{
 			name: "no blocks",

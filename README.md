@@ -39,7 +39,9 @@ ai-engineer run "Add Redis cache to user profile API"
 
 Flags: `--dry-run`, `--max-files=15`, `--max-tokens=4096`
 
-**See [docs/HOWTO.md](docs/HOWTO.md)** for setup and usage with a real project (e.g. notification-service).
+**See [docs/HOWTO.md](docs/HOWTO.md)** for setup and usage.
+
+**Terminal helper**: `bash scripts/helper.sh` – install, run, validate, show-validate.
 
 ## Layout
 

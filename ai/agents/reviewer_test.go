@@ -10,6 +10,8 @@ func TestParseReviewResponse(t *testing.T) {
 		resp   string
 		status string
 	}{
+		{"verdict approved", "VERDICT: APPROVED\nLooks good.", Approved},
+		{"verdict changes", "VERDICT: REQUEST_CHANGES\nFix the bug.", RequestChanges},
 		{"approved start", "APPROVED\nLooks good.", Approved},
 		{"approved lowercase", "approved. The code is fine.", Approved},
 		{"request changes", "REQUEST_CHANGES\nFix the bug.", RequestChanges},

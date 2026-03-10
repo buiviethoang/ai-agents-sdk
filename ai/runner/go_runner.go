@@ -7,23 +7,25 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	repoc "github.com/buiviethoang/ai-agents-sdk/ai/context"
 	"github.com/buiviethoang/ai-agents-sdk/ai/agents"
+	repoc "github.com/buiviethoang/ai-agents-sdk/ai/context"
 	"github.com/buiviethoang/ai-agents-sdk/ai/llm"
 )
 
 const maxIterations = 2
 
 type Config struct {
-	RootDir     string
-	ValidateScript string
-	DryRun      bool
+	RootDir         string
+	ValidateScript  string
+	DryRun          bool
+	CacheDir        string // enable file index; default: rootDir
+	MaxCharsPerFile int    // truncate files over this; default: 8000
 }
 
 type Result struct {
-	Approved    bool
-	Files       map[string]string
-	Iterations  int
+	Approved      bool
+	Files         map[string]string
+	Iterations    int
 	FinalFeedback string
 }
 
@@ -51,6 +53,14 @@ func (r *Runner) Execute(ctx context.Context, feature string, cfg Config) (Resul
 	validateScript := cfg.ValidateScript
 	if validateScript == "" {
 		validateScript = filepath.Join(rootDir, "scripts", "validate.sh")
+	}
+	cacheDir := cfg.CacheDir
+	if cacheDir == "" {
+		cacheDir = rootDir
+	}
+	r.extractor.CacheDir = cacheDir
+	if cfg.MaxCharsPerFile > 0 {
+		r.extractor.MaxCharsPerFile = cfg.MaxCharsPerFile
 	}
 
 	rc, err := r.extractor.Extract(ctx, rootDir, feature)
@@ -94,10 +104,10 @@ func (r *Runner) Execute(ctx context.Context, feature string, cfg Config) (Resul
 	}
 
 	return Result{
-		Approved:       false,
-		Files:          files,
-		Iterations:     maxIterations,
-		FinalFeedback:  feedback,
+		Approved:      false,
+		Files:         files,
+		Iterations:    maxIterations,
+		FinalFeedback: feedback,
 	}, fmt.Errorf("review did not approve after %d iterations", maxIterations)
 }
 
