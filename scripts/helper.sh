@@ -4,13 +4,10 @@
 
 set -e
 
-SDK_MODULE="github.com/buiviethoang/ai-agents-sdk"
-INSTALL_CMD="GOPROXY=direct go install ${SDK_MODULE}/cmd/ai-engineer@main"
-
 install_cli() {
-  echo "Installing ai-engineer..."
-  $INSTALL_CMD
-  echo "Done. Run: ai-engineer \"your task\""
+  echo "Installing pipeline..."
+  pip install -e .
+  echo "Done. Run: pipeline \"your task\""
 }
 
 run() {
@@ -18,7 +15,7 @@ run() {
     echo "Usage: run \"Add Redis cache\""
     exit 1
   fi
-  ai-engineer "$@"
+  pipeline "$@"
 }
 
 validate() {
@@ -59,8 +56,7 @@ Validate flow (scripts/validate.sh):
   4. go test ./...     - run tests
   5. go test -cover    - coverage
 
-Runner invokes: bash scripts/validate.sh (cwd = project root)
-On any failure, ai-engineer exits with error.
+Pipeline DevOps node invokes: bash scripts/validate.sh
 EOF
 }
 
@@ -72,10 +68,10 @@ case "${1:-}" in
   show-validate) show_validate_flow ;;
   *)
     echo "Helper commands: install | run | validate [dir] | validate-standalone [dir] | show-validate"
-    echo "  install             - go install ai-engineer"
-    echo "  run \"task\"          - ai-engineer \"task\""
+    echo "  install             - pip install -e ."
+    echo "  run \"task\"          - pipeline \"task\""
     echo "  validate [dir]      - run scripts/validate.sh in dir"
-    echo "  validate-standalone - run validate steps without script file"
-    echo "  show-validate      - print validate flow"
+    echo "  validate-standalone - run validate steps without script"
+    echo "  show-validate       - print validate flow"
     ;;
 esac

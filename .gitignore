@@ -30,6 +30,11 @@ go.work.sum
 # AI agents cache
 .ai-agents-cache
 
+# Python
+.venv
+__pycache__
+*.pyc
+
 # Editor/IDE
 # .idea/
 # .vscode/

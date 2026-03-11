@@ -1,53 +1,29 @@
 # ai-agents-sdk
 
-Go SDK and CLI for an AI agent workflow: Builder writes Go code, Reviewer validates, max 2 debate iterations, local Go validation.
+LangGraph pipeline for AI coding agents: Architect → Coder → Reviewer → DevOps.
 
 ## Install
 
 ```bash
-go get github.com/buiviethoang/ai-agents-sdk
-```
-
-## Library Usage
-
-```go
-import (
-    "context"
-    "github.com/buiviethoang/ai-agents-sdk/sdk"
-)
-
-func main() {
-    result, err := sdk.Run(context.Background(), "Add Redis cache to user profile API", sdk.Config{
-        RootDir:   "/path/to/project",
-        MaxFiles:  15,
-        MaxTokens: 4096,
-    })
-    if err != nil {
-        // handle
-    }
-    // result.Approved, result.Files, result.Iterations
-}
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
 ## CLI Usage
 
 ```bash
-go install github.com/buiviethoang/ai-agents-sdk/cmd/ai-engineer@latest
 export ANTHROPIC_API_KEY=your-key
-ai-engineer run "Add Redis cache to user profile API"
+pipeline "Add Redis cache to user profile API"
 ```
 
-Flags: `--dry-run`, `--max-files=15`, `--max-tokens=4096`
+Flags: `--dry-run`, `--root-dir`, `--verbose`
 
-**See [docs/HOWTO.md](docs/HOWTO.md)** for setup and usage.
-
-**Terminal helper**: `bash scripts/helper.sh` – install, run, validate, show-validate.
+See [docs/HOWTO.md](docs/HOWTO.md) for setup and usage.
 
 ## Layout
 
-- `sdk` - Public API (`sdk.Run`)
-- `ai/llm` - Claude client
-- `ai/context` - Repo context extractor
-- `ai/agents` - Builder and Reviewer agents
-- `ai/runner` - Orchestration and debate loop
-
+- `src/pipeline/` – LangGraph pipeline
+- `src/pipeline/nodes/` – Architect, Coder, Reviewer, DevOps
+- `src/pipeline/tools/` – gosec, golangci-lint, validate, git
+- `scripts/` – validate.sh, helper.sh
