@@ -3,7 +3,7 @@ import json
 import logging
 import re
 
-from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from pipeline.llm.claude import send
 from pipeline.state import PipelineState
@@ -42,7 +42,7 @@ def parse_plan_tasks(response: str) -> tuple[str, list[dict]]:
     return plan, tasks
 
 
-def make_architect_node(model: ChatAnthropic):
+def make_architect_node(model: BaseChatModel):
     def architect(state: PipelineState) -> dict:
         req = state.get("requirement", "")
         logger.info("[ARCHITECT] planning for: %s...", req[:80] if req else "")

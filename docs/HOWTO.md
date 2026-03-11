@@ -31,6 +31,14 @@ pip install -e .
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
+For claudible.io (OpenAI-compat endpoint):
+
+```bash
+export LLM_CLIENT=openai
+export LLM_BASE_URL=https://claudible.io/v1
+export ANTHROPIC_API_KEY=your-claudible-token
+```
+
 ### 2.3 Create `ARCHITECTURE.md` in project root
 
 Agents read this for context.
@@ -102,7 +110,9 @@ If no `.go` files are produced, the reviewer is skipped.
 
 | Env | Purpose |
 |-----|---------|
-| `ANTHROPIC_API_KEY` | Claude API |
+| `ANTHROPIC_API_KEY` | Claude API (or proxy key for openai client) |
+| `LLM_CLIENT` | `anthropic` (native /v1/messages) or `openai` (claudible /v1/chat/completions) |
+| `LLM_BASE_URL` | Base URL for openai client (default: https://claudible.io/v1) |
 | `ROOT_DIR` | Project root (default: cwd) |
 | `PIPELINE_DRY_RUN` | 1/true/yes to skip writes |
 | `PIPELINE_VERBOSE` | 1/true/yes for verbose logs |

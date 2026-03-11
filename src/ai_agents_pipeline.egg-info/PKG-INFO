@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: ai-agents-pipeline
+Version: 0.1.0
+Summary: LangGraph pipeline for Go coding agents
+Requires-Python: >=3.10
+Requires-Dist: langgraph>=0.2
+Requires-Dist: langchain-core>=0.3
+Requires-Dist: langchain-anthropic>=0.2
+Requires-Dist: langchain-openai>=0.2
+Requires-Dist: anthropic>=0.39

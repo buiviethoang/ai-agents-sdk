@@ -2,7 +2,7 @@
 import logging
 import re
 
-from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from pipeline.extractor import extract
 from pipeline.llm.claude import send
@@ -60,7 +60,7 @@ def format_files(files: list[tuple[str, str]]) -> str:
 
 
 def make_coder_node(
-    model: ChatAnthropic,
+    model: BaseChatModel,
     root_dir: str,
     max_files: int = 15,
 ):

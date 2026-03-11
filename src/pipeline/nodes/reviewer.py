@@ -1,7 +1,7 @@
 """Node B: Reviewer - gosec + LLM review."""
 import logging
 
-from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from pipeline.llm.claude import send
 from pipeline.state import PipelineState
@@ -38,7 +38,7 @@ def parse_verdict(resp: str) -> tuple[bool, str]:
     return False, resp
 
 
-def make_reviewer_node(model: ChatAnthropic, root_dir: str = "."):
+def make_reviewer_node(model: BaseChatModel, root_dir: str = "."):
     def reviewer(state: PipelineState) -> dict:
         files = state.get("files", {})
         root = state.get("root_dir", root_dir)

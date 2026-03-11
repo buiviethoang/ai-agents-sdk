@@ -6,7 +6,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from pipeline.config import MAX_FILES, MAX_ITERATIONS, ROOT_DIR
-from pipeline.llm.claude import get_model
+from pipeline.llm.client import get_model
 from pipeline.nodes.architect import make_architect_node
 from pipeline.nodes.coder import make_coder_node
 from pipeline.nodes.devops import make_devops_node

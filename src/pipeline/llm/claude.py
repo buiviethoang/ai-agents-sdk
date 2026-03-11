@@ -1,13 +1,12 @@
-"""Claude LLM client."""
+"""LLM chat helpers (truncate, send)."""
 import logging
-import os
 
-from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage, SystemMessage
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODEL = "claude-sonnet-4-20250514"
+DEFAULT_MODEL_OPENAI = "claude-sonnet-4.6"
 MAX_TOKENS = 4096
 CHARS_PER_TOKEN = 4
 MAX_INPUT_CHARS = 45000
@@ -17,15 +16,6 @@ def truncate(s: str, max_chars: int) -> str:
     if len(s) <= max_chars:
         return s
     return s[:max_chars] + "\n...(truncated)"
-
-
-def get_model(api_key: str = "", model: str = DEFAULT_MODEL, max_tokens: int = MAX_TOKENS):
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    return ChatAnthropic(
-        api_key=key,
-        model=model,
-        max_tokens=max_tokens,
-    )
 
 
 def send(model, system: str, user: str, verbose: bool = False) -> str:
