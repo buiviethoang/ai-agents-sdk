@@ -15,15 +15,13 @@ LangGraph pipeline with 4 agents: Architect (C) → Coder (A) → Reviewer (B) �
 
 ## 2. Setup
 
-### 2.1 Create venv and install
+### 2.1 Install
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# or: .venv\Scripts\activate  # Windows
-
-pip install -e .
+pip install ai-agents-pipeline
 ```
+
+Or from local: `pip install -e /path/to/ai-agents-sdk`
 
 ### 2.2 Set API key
 
@@ -39,31 +37,14 @@ export LLM_BASE_URL=https://claudible.io/v1
 export ANTHROPIC_API_KEY=your-claudible-token
 ```
 
-### 2.3 Create `ARCHITECTURE.md` in project root
-
-Agents read this for context.
-
-```markdown
-# project-name
-
-## Overview
-...
-
-## Layout
-...
-```
-
-### 2.4 Create `scripts/validate.sh`
+### 2.3 Scaffold Go project
 
 ```bash
-#!/bin/bash
-set -e
-go fmt ./...
-go vet ./...
-golangci-lint run
-go test ./...
-go test -cover ./...
+cd /path/to/your-go-project
+pipeline init
 ```
+
+Creates `ARCHITECTURE.md` and `scripts/validate.sh`. Edit ARCHITECTURE.md with your project overview.
 
 ---
 
@@ -83,7 +64,9 @@ pipeline "Add Redis cache for notification templates"
 |------|---------|-------------|
 | `--dry-run` | false | Skip writes and validation |
 | `--root-dir` | cwd | Project root |
-| `--verbose` | false | Verbose logging |
+| `--verbose` | false | Stream LLM tokens |
+| `--no-stream` | false | Disable step-by-step output |
+| `--interactive` / `-i` | false | Step-by-step with prompts (apply/edit/skip) |
 
 ```bash
 # Preview
@@ -123,12 +106,18 @@ If no `.go` files are produced, the reviewer is skipped.
 ## 6. Programmatic use
 
 ```python
-from pipeline.graph import run_graph
+from pipeline.graph import run_graph, run_graph_stream
 
-result = run_graph(
-    requirement="Add Redis cache",
-    root_dir="/path/to/project",
-    dry_run=False,
-)
+# Blocking
+result = run_graph(requirement="Add Redis cache", root_dir="/path/to/project")
 # result["files"], result["plan_md"], result["tasks"], ...
+
+# Streaming
+for event_type, key, data in run_graph_stream(requirement="Add Redis cache", root_dir="/path/to/project"):
+    if event_type == "step":
+        print(key, data)
+    elif event_type == "progress":
+        print(data.get("msg"))
+    elif event_type == "done":
+        result = data
 ```

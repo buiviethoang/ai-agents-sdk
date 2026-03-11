@@ -34,6 +34,9 @@ go.work.sum
 .venv
 __pycache__
 *.pyc
+dist/
+build/
+*.egg-info/
 
 # Editor/IDE
 # .idea/

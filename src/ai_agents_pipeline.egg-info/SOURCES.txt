@@ -7,10 +7,12 @@ src/ai_agents_pipeline.egg-info/entry_points.txt
 src/ai_agents_pipeline.egg-info/requires.txt
 src/ai_agents_pipeline.egg-info/top_level.txt
 src/pipeline/__init__.py
+src/pipeline/api.py
 src/pipeline/config.py
 src/pipeline/extractor.py
 src/pipeline/graph.py
 src/pipeline/main.py
+src/pipeline/mcp_server.py
 src/pipeline/state.py
 src/pipeline/llm/__init__.py
 src/pipeline/llm/claude.py

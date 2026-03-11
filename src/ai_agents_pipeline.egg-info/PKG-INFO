@@ -1,10 +1,102 @@
 Metadata-Version: 2.4
 Name: ai-agents-pipeline
-Version: 0.1.0
-Summary: LangGraph pipeline for Go coding agents
+Version: 0.2.0
+Summary: LangGraph pipeline for Go coding agents - Architect, Coder, Reviewer, DevOps
 Requires-Python: >=3.10
+Description-Content-Type: text/markdown
 Requires-Dist: langgraph>=0.2
 Requires-Dist: langchain-core>=0.3
 Requires-Dist: langchain-anthropic>=0.2
 Requires-Dist: langchain-openai>=0.2
 Requires-Dist: anthropic>=0.39
+Requires-Dist: mcp>=1.0
+
+# ai-agents-pipeline
+
+LangGraph pipeline for AI coding agents: Architect → Coder → Reviewer → DevOps. Use from any Go project.
+
+## Install (SDK)
+
+```bash
+pip install ai-agents-pipeline
+```
+
+Or from a local checkout:
+
+```bash
+pip install -e /path/to/ai-agents-sdk
+```
+
+Or from git:
+
+```bash
+pip install git+https://github.com/your-org/ai-agents-sdk.git
+```
+
+## Go Project Setup
+
+### 1. Install and configure
+
+```bash
+pip install ai-agents-pipeline
+export ANTHROPIC_API_KEY=sk-ant-...
+```
+
+For claudible.io:
+
+```bash
+export LLM_CLIENT=openai
+export LLM_BASE_URL=https://claudible.io/v1
+export ANTHROPIC_API_KEY=your-token
+```
+
+### 2. Scaffold your Go project
+
+Run from your Go project root:
+
+```bash
+cd /path/to/your-go-project
+pipeline init
+```
+
+This creates `ARCHITECTURE.md` and `scripts/validate.sh`.
+
+### 3. Run
+
+```bash
+pipeline "Add Redis cache for notification API"
+pipeline --dry-run "Add retry logic"
+```
+
+### From another directory
+
+```bash
+pipeline --root-dir /path/to/your-go-project "Add unit tests"
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pipeline "task"` | Run pipeline with step-by-step streaming |
+| `pipeline init [path]` | Scaffold ARCHITECTURE.md + scripts/validate.sh |
+| `pipeline --no-stream "task"` | Blocking mode (no live steps) |
+| `pipeline --verbose "task"` | Stream LLM tokens |
+| `pipeline --interactive "task"` | Step-by-step with apply/edit/skip prompts |
+| `pipeline-mcp` | MCP server for Claude Code / Cursor |
+
+## Flow
+
+1. **Architect** – Plans and task list from requirement
+2. **Coder** – Implements each task (Go code)
+3. **Reviewer** – gosec + LLM review (loops to Coder if issues)
+4. **DevOps** – Write files, go fmt, golangci-lint, tests, git push
+
+See [docs/HOWTO.md](docs/HOWTO.md) for details.
+
+## Layout
+
+- `src/pipeline/` – LangGraph pipeline
+- `src/pipeline/nodes/` – Architect, Coder, Reviewer, DevOps
+- `src/pipeline/tools/` – gosec, golangci-lint, validate, git
+- `src/pipeline/llm/` – Anthropic / OpenAI-compat clients

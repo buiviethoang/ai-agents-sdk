@@ -2,6 +2,8 @@
 import logging
 import subprocess
 
+from langgraph.config import get_stream_writer
+
 from pipeline.state import PipelineState
 from pipeline.tools.write_files import write_files
 from pipeline.tools.validate import run_validate
@@ -30,6 +32,9 @@ def make_devops_node(root_dir: str, dry_run: bool = False):
         root = state.get("root_dir", root_dir)
         is_dry = state.get("dry_run", dry_run)
 
+        writer = get_stream_writer()
+        if writer:
+            writer({"step": "devops", "msg": "Format, lint, test, push"})
         logger.info("[DEVOPS] format, lint, test, push")
 
         write_files(root, files, dry_run=is_dry)

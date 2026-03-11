@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ai-agents-pipeline": {
+      "command": "pipeline-mcp",
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-...",
+        "ROOT_DIR": "/path/to/your-go-project"
+      }
+    }
+  }
+}

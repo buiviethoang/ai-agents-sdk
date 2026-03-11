@@ -3,6 +3,7 @@ import logging
 import re
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from langgraph.config import get_stream_writer
 
 from pipeline.extractor import extract
 from pipeline.llm.claude import send
@@ -76,6 +77,9 @@ def make_coder_node(
 
         task = tasks[idx]
         desc = task.get("description", "implement")
+        writer = get_stream_writer()
+        if writer:
+            writer({"step": "coder", "msg": f"Task {idx + 1}/{len(tasks)}: {desc[:50]}..."})
         logger.info("[CODER] task %d: %s...", idx, desc[:50] if desc else "")
 
         existing = state.get("files", {})
@@ -100,6 +104,8 @@ def make_coder_node(
 
         resp = send(model, system, user)
         files = parse_file_blocks(resp)
+        if writer:
+            writer({"step": "coder", "msg": f"Produced {len(files)} files"})
         logger.info("[CODER] produced %d files", len(files))
         return {
             "files": files,

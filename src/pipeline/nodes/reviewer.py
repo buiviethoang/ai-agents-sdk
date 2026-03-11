@@ -2,6 +2,7 @@
 import logging
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from langgraph.config import get_stream_writer
 
 from pipeline.llm.claude import send
 from pipeline.state import PipelineState
@@ -44,6 +45,9 @@ def make_reviewer_node(model: BaseChatModel, root_dir: str = "."):
         root = state.get("root_dir", root_dir)
         dry_run = state.get("dry_run", False)
 
+        writer = get_stream_writer()
+        if writer:
+            writer({"step": "reviewer", "msg": "Running gosec + LLM review..."})
         logger.info("[REVIEWER] gosec + LLM review")
 
         write_files(root, files, dry_run=dry_run)
@@ -56,6 +60,8 @@ def make_reviewer_node(model: BaseChatModel, root_dir: str = "."):
         resp = send(model, SYSTEM, user)
         passed, feedback = parse_verdict(resp)
 
+        if writer:
+            writer({"step": "reviewer", "msg": "APPROVED" if passed else "REQUEST_CHANGES"})
         if passed:
             logger.info("[REVIEWER] APPROVED")
             return {"review_issues": [], "review_feedback": ""}

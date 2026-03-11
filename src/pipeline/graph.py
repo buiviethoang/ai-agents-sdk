@@ -2,6 +2,7 @@
 import logging
 from pathlib import Path
 
+
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
@@ -12,6 +13,8 @@ from pipeline.nodes.coder import make_coder_node
 from pipeline.nodes.devops import make_devops_node
 from pipeline.nodes.reviewer import make_reviewer_node
 from pipeline.state import PipelineState
+
+logger = logging.getLogger(__name__)
 
 
 def has_go_files(files: dict[str, str]) -> bool:
@@ -99,3 +102,64 @@ def run_graph(
         "dry_run": dry_run,
     }
     return graph.invoke(initial, config)
+
+
+def _format_step(node: str, data: dict) -> str:
+    name = node.upper().replace("_", " ")
+    if node == "architect" and data.get("plan_md"):
+        tasks = data.get("tasks", [])
+        return f"\n═══ {name} ═══\n  Plan: {len(data['plan_md'])} chars, {len(tasks)} tasks\n"
+    if node == "coder" and data.get("files"):
+        return f"\n═══ {name} ═══\n  Produced {len(data['files'])} files\n"
+    if node == "reviewer":
+        issues = data.get("review_issues", [])
+        status = "APPROVED" if not issues else "REQUEST_CHANGES"
+        return f"\n═══ {name} ═══\n  {status}\n"
+    if node == "devops":
+        return f"\n═══ {name} ═══\n  Format, lint, test, push\n"
+    return f"\n═══ {name} ═══\n"
+
+
+def run_graph_stream(
+    requirement: str,
+    root_dir: str = ROOT_DIR,
+    dry_run: bool = False,
+    thread_id: str = "default",
+    api_key: str = "",
+    stream_tokens: bool = True,
+):
+    graph = build_graph(root_dir, dry_run, api_key)
+    config = {"configurable": {"thread_id": thread_id}}
+    initial: PipelineState = {
+        "requirement": requirement,
+        "root_dir": root_dir,
+        "dry_run": dry_run,
+    }
+    modes = ["updates", "custom"]
+    if stream_tokens:
+        modes.append("messages")
+
+    final = None
+    try:
+        for chunk in graph.stream(
+            initial,
+            config,
+            stream_mode=modes,
+            version="v2",
+        ):
+            t = chunk.get("type")
+            data = chunk.get("data")
+            if t == "updates":
+                for node, node_data in data.items():
+                    yield ("step", node, node_data)
+            elif t == "custom" and isinstance(data, dict):
+                yield ("progress", data.get("step", ""), data)
+            elif t == "messages":
+                msg, meta = data
+                if msg.content:
+                    yield ("token", meta.get("langgraph_node", ""), msg.content)
+        snapshot = graph.get_state(config)
+        final = snapshot.values if snapshot and getattr(snapshot, "values", None) else None
+    except Exception:
+        raise
+    yield ("done", None, final)

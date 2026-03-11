@@ -3,3 +3,4 @@ langchain-core>=0.3
 langchain-anthropic>=0.2
 langchain-openai>=0.2
 anthropic>=0.39
+mcp>=1.0
